@@ -1,0 +1,214 @@
+Project Scope Prompt — Payroll MVP (Django + Firebase)
+
+You are building a dead-simple payroll MVP.
+
+Tech stack
+
+Backend + UI: Django (server-rendered templates)
+
+Database: Firebase Firestore (Cloud NoSQL) via Firebase Admin SDK
+
+Auth: None (single trusted user for MVP)
+
+PDF: Server-side PDF generation (library of choice)
+
+Core Product Goal
+
+Create payroll runs, assign employees, add arbitrary deductions per employee, and export a payroll PDF.
+No workflows, no approvals, no statutory logic.
+
+Functional Flow
+Create Payroll
+
+User clicks Create New Payroll
+
+User inputs:
+
+month
+
+issued_date (string, not date type)
+
+System shows employee list with checkboxes
+
+default: all employees selected
+
+User clicks Create
+
+System:
+
+Creates a PayrollRun
+
+Creates PayrollLine snapshot records for each selected employee
+
+Redirect to payroll detail page
+
+Payroll Detail (“Payrolling Screen”)
+
+Displays employees included in the payroll run
+
+Each employee row has:
+
+Salary
+
+Total deductions (computed)
+
+Net pay (salary − deductions)
+
+Deductions button
+
+Deductions Modal
+
+Opens per employee (per payroll line)
+
+Dynamic repeatable rows:
+
+deduction_name
+
+amount
+
+Add row / remove row
+
+Save persists deduction rows via JSON endpoint
+
+Download PDF
+
+One PDF per payroll run
+
+For each employee:
+
+Employee snapshot info
+
+Salary
+
+List of deductions (name + amount)
+
+Totals:
+
+total_deductions
+
+net_pay
+
+Data Model (Firestore)
+Employee (master data)
+
+Stable identity only:
+
+name
+
+role
+
+nationality
+
+employee_id
+
+passport
+
+epf_no
+
+socso_no
+
+gender
+
+(optional) base_salary if salary is truly stable
+
+Collection: employees/{employeeId}
+
+PayrollRun
+
+month
+
+issued_date (string)
+
+created_at
+
+Collection: payroll_runs/{runId}
+
+PayrollLine (snapshot per employee per run)
+
+Stored under payroll run:
+
+payroll_run_id
+
+employee_ref
+
+snapshot fields (name, role, IDs, etc.)
+
+salary (stored here to preserve history)
+
+optional computed fields:
+
+total_deductions
+
+net_pay
+
+created_at / updated_at
+
+Path:
+payroll_runs/{runId}/lines/{lineId}
+
+PayrollDeduction
+
+Free-form, dynamic rows:
+
+payroll_line reference
+
+name (text)
+
+amount (decimal, stored as string)
+
+sort_order (optional)
+
+timestamps
+
+Path:
+payroll_runs/{runId}/lines/{lineId}/deductions/{deductionId}
+
+Architectural Constraints
+
+No Django ORM models for payroll data
+
+Use Firestore CRUD via a small repository/data-access layer
+
+Salary lives on PayrollLine, not Employee (to avoid history breakage)
+
+Deduction types are not predefined
+
+No statuses, drafts, approvals, or statutory calculations
+
+UI Requirements (Minimal)
+
+Payroll create page (form + employee checklist)
+
+Payroll detail page (table + modal)
+
+Deductions modal using fetch/JSON
+
+Page refresh after save is acceptable
+
+Out of Scope (Explicitly)
+
+Authentication
+
+Permissions
+
+Multi-tenant support
+
+EPF / SOCSO / tax logic
+
+Audit logs
+
+Fancy UI
+
+Deliverables
+
+Django project with:
+
+Firestore integration
+
+Payroll create + detail views
+
+Deductions JSON endpoint
+
+PDF export endpoint
+
+Clean, readable, MVP-grade code

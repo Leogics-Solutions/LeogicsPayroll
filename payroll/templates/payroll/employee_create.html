@@ -1,0 +1,191 @@
+{% extends 'payroll/base.html' %}
+
+{% block title %}Add Employee{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 30px;">Add Employee</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="card">
+        <h2 style="margin-bottom: 20px; font-size: 18px; color: #0f172a; font-weight: 600;">Basic Information</h2>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="text" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="employee_id">Employee ID *</label>
+                <input type="text" id="employee_id" name="employee_id" required>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role *</label>
+                <input type="text" id="role" name="role" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nationality">Nationality *</label>
+                <input type="text" id="nationality" name="nationality" required>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender *</label>
+                <select id="gender" name="gender" required
+                    style="padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; width: 100%; font-size: 14px;">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="passport">Passport/IC *</label>
+                <input type="text" id="passport" name="passport" required>
+            </div>
+
+            <div class="form-group">
+                <label for="epf_no">EPF No.</label>
+                <input type="text" id="epf_no" name="epf_no">
+            </div>
+
+            <div class="form-group">
+                <label for="socso_no">SOCSO No.</label>
+                <input type="text" id="socso_no" name="socso_no">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom: 20px; font-size: 18px; color: #0f172a; font-weight: 600;">Salary & Deductions</h2>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label for="base_salary">Base Salary (RM) *</label>
+                <input type="text" id="base_salary" name="base_salary" data-currency data-value="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="epf_deduction">EPF Deduction (RM)</label>
+                <input type="text" id="epf_deduction" name="epf_deduction" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="socso_deduction">SOCSO Deduction (RM)</label>
+                <input type="text" id="socso_deduction" name="socso_deduction" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="eis_deduction">EIS Deduction (RM)</label>
+                <input type="text" id="eis_deduction" name="eis_deduction" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="zakat_deduction">Zakat Deduction (RM)</label>
+                <input type="text" id="zakat_deduction" name="zakat_deduction" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="pcb_deduction">PCB Deduction (RM)</label>
+                <input type="text" id="pcb_deduction" name="pcb_deduction" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="hrdf_deduction">HRDF Deduction (RM)</label>
+                <input type="text" id="hrdf_deduction" name="hrdf_deduction" data-currency data-value="0">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom: 20px; font-size: 18px; color: #0f172a; font-weight: 600;">Employer Contributions</h2>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label for="employer_epf">Employer EPF (RM)</label>
+                <input type="text" id="employer_epf" name="employer_epf" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="employer_socso">Employer SOCSO (RM)</label>
+                <input type="text" id="employer_socso" name="employer_socso" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="employer_eis">Employer EIS (RM)</label>
+                <input type="text" id="employer_eis" name="employer_eis" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="employer_zakat">Employer Zakat (RM)</label>
+                <input type="text" id="employer_zakat" name="employer_zakat" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="employer_pcb">Employer PCB (RM)</label>
+                <input type="text" id="employer_pcb" name="employer_pcb" data-currency data-value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="employer_hrdf">Employer HRDF (RM)</label>
+                <input type="text" id="employer_hrdf" name="employer_hrdf" data-currency data-value="0">
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn">Save Employee</button>
+        <a href="{% url 'employee_list' %}"
+            style="margin-left: 12px; color: #64748b; text-decoration: none; font-weight: 600;">Cancel</a>
+    </div>
+</form>
+
+<script>
+    // Bank-style currency input
+    document.querySelectorAll('input[data-currency]').forEach(input => {
+        // Initialize display
+        const initialValue = parseFloat(input.dataset.value || 0);
+        input.value = initialValue.toFixed(2);
+        
+        // Store raw cents value
+        input.dataset.cents = Math.round(initialValue * 100);
+        
+        input.addEventListener('keydown', function(e) {
+            e.preventDefault();
+            
+            let cents = parseInt(this.dataset.cents) || 0;
+            
+            if (e.key >= '0' && e.key <= '9') {
+                // Add digit to the right
+                cents = cents * 10 + parseInt(e.key);
+                // Limit to reasonable max (999,999,999.99)
+                if (cents > 99999999999) cents = 99999999999;
+            } else if (e.key === 'Backspace') {
+                // Remove rightmost digit
+                cents = Math.floor(cents / 10);
+            } else if (e.key === 'Tab') {
+                // Allow tab navigation
+                e.preventDefault();
+                const inputs = Array.from(document.querySelectorAll('input, select, button'));
+                const idx = inputs.indexOf(this);
+                const next = e.shiftKey ? inputs[idx - 1] : inputs[idx + 1];
+                if (next) next.focus();
+                return;
+            }
+            
+            this.dataset.cents = cents;
+            this.value = (cents / 100).toFixed(2);
+        });
+        
+        // Prevent paste
+        input.addEventListener('paste', e => e.preventDefault());
+    });
+</script>
+{% endblock %}

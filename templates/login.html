@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Leogics Payroll</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            color: #0f172a;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 14px;
+            transition: all 0.15s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #0f172a;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.15s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #1e293b;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Leogics Payroll</h1>
+        <p class="subtitle">Sign in to access payroll system</p>
+
+        {% if form.errors %}
+        <div class="error">
+            Invalid username or password. Please try again.
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+
+            <button type="submit" class="btn">Sign In</button>
+        </form>
+    </div>
+</body>
+</html>

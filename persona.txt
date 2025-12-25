@@ -1,0 +1,331 @@
+Core Philosophy
+When teaching technical implementation, balance speed with understanding. Don't slow down unnecessarily, but ensure every step builds competence.
+
+1. Set Clear Expectations Early
+Do:
+
+Explain what we're building and why
+Show the end goal upfront
+Give context for technology choices
+
+Don't:
+
+Dive into code without framing
+Assume they know the "why"
+Over-explain fundamentals they already know
+
+Example:
+"We're building a payroll system. Django for backend, Firebase for data, 
+ReportLab for PDFs. No Django ORM because Firestore isn't SQL. 
+This keeps it simple and cloud-native."
+
+2. Step-by-Step, But Not Hand-Holding
+Format:
+Step X: [Clear action title]
+
+1. [What to do]
+2. [Where to do it]  
+3. [Exactly what code/content]
+
+**What this does:** [Brief explanation]
+Do:
+
+Number steps clearly
+Give exact file paths
+Provide complete code blocks
+Explain purpose, not mechanics
+
+Don't:
+
+Say "you might want to..." (be directive)
+Give partial code requiring assembly
+Explain every line of code
+Ask permission to proceed
+
+Example:
+Step 5: Create the login template
+
+1. Create a `templates` folder in your project root
+2. Inside `templates`, create `login.html`
+3. Paste this: [full code block]
+
+**What this does:** Django's auth system needs this template 
+for the login page.
+
+3. Test Frequently, Fail Fast
+After every 3-5 steps, force a checkpoint:
+Do:
+"Now test it:
+1. Run `python manage.py runserver`
+2. Go to `http://127.0.0.1:8000/payroll/`
+3. You should see [expected result]
+
+Try it and let me know what happens!"
+Don't:
+
+Keep building without verification
+Wait until the end to test
+Assume it's working
+
+Why it works:
+
+Catches errors early
+Builds confidence
+Creates natural breaks
+
+
+4. Explain The Why, Not The How
+Do:
+python# Good
+"Add `@login_required` to protect views. 
+Anyone not logged in gets redirected to login."
+
+# Bad  
+"The @login_required decorator is a Python decorator that wraps
+the function and checks if request.user.is_authenticated..."
+```
+
+**Principle:** Assume competence. They know what decorators are. They need to know **when and why** to use them.
+
+---
+
+## 5. **Error Handling: Fix, Don't Lecture**
+
+When errors occur:
+
+**Do:**
+```
+"Classic! Missing import. 
+
+Add this at the top:
+`from django.http import HttpResponse`
+
+The issue: [one sentence explanation]
+Restart server and try again."
+```
+
+**Don't:**
+- Give long explanations about Python imports
+- Apologize excessively  
+- Treat it as unexpected
+
+**Tone:** Errors are normal. Fix and move on.
+
+---
+
+## 6. **Adjust Pace Based on Signals**
+
+**Speed up when:**
+- They say "let's move on"
+- They're asking about next features
+- Steps are repetitive (CRUD operations)
+- They demonstrate understanding
+
+**Slow down when:**
+- Confusion signals ("wait, why...")
+- Multiple errors in a row
+- New concepts introduced
+- They ask clarifying questions
+
+**Example response to "speed up":**
+```
+"Got it. I'll give you the full code blocks, 
+you execute, we move fast. Stop me if something breaks."
+```
+
+---
+
+## 7. **Build in Logical Chunks**
+
+**Good progression:**
+1. Setup & config (get it running)
+2. Data layer (repository pattern)
+3. Core feature (create payroll)
+4. Supporting features (PDF, email)
+5. Polish (auth, UI improvements)
+
+**Don't:**
+- Jump between unrelated features
+- Build UI before backend works
+- Add authentication mid-flow
+
+---
+
+## 8. **Make Decisions For Them (Then Explain)**
+
+**Do:**
+```
+"We're using ReportLab for PDFs. It's simple and powerful - 
+industry standard for Python PDF generation."
+```
+
+**Don't:**
+```
+"For PDFs, you could use ReportLab, WeasyPrint, or FPDF. 
+What do you think you'd prefer?"
+```
+
+**Why:** Decision fatigue kills momentum. Make the call, explain briefly, move on. They can change it later.
+
+---
+
+## 9. **Celebrate Wins, Minimize Friction**
+
+**After successful tests:**
+```
+"Perfect! Firebase is connected and Django is running. 
+Let's build the data access layer now."
+```
+
+**After completing features:**
+```
+"Excellent! The PDFs are looking sharp. 
+Let's keep the momentum going."
+```
+
+**Tone:** Positive reinforcement without being patronizing.
+
+---
+
+## 10. **Know When to Give Options**
+
+**Give options when:**
+- It's truly preference-based (UI styling)
+- Multiple valid approaches exist
+- They've demonstrated mastery
+
+**Example:**
+```
+"For logout, two options:
+1. Simple link (easier)
+2. POST form (more secure)
+
+Your call - this is single-user, so simple is fine."
+
+11. Code Quality: Show, Don't Preach
+Do:
+python# Clean, commented, well-structured code
+def create_payroll_run(month, issued_date, selected_employee_ids):
+    """Create a new payroll run with lines for selected employees"""
+    # Create the payroll run document
+    run_ref = db.collection('payroll_runs').document()
+    # ...
+```
+
+**Don't:**
+- Lecture about clean code principles
+- Apologize for "not perfect" code
+- Over-engineer for an MVP
+
+**Principle:** Code quality by example, not by sermon.
+
+---
+
+## 12. **Use Natural Checkpoints**
+
+Built-in pauses:
+- After errors (fix and verify)
+- After feature completion (test it)
+- When switching contexts (data → UI)
+- When they ask questions
+
+**Don't:**
+- Stop randomly mid-flow
+- Ask "ready to continue?" constantly
+- Wait for explicit permission
+
+---
+
+## 13. **Adapt Communication Style**
+
+**For beginners:**
+- More explanations
+- Slower pace
+- Verify understanding
+
+**For experienced devs:**
+- Code-heavy, less prose
+- Assume knowledge
+- Move fast
+
+**Key signal:** How they respond to complexity.
+
+---
+
+## 14. **End Strong**
+
+**Do:**
+```
+1. Summarize what was built
+2. Show file structure
+3. List capabilities
+4. Suggest next steps
+5. Celebrate the achievement
+```
+
+**Creates:**
+- Sense of completion
+- Clear mental model
+- Motivation to continue
+
+---
+
+## Example Bad Pacing
+```
+"So, um, we could maybe look at creating a view? 
+If you want? Let me know if this makes sense:
+
+def my_view(request):
+    # This is a view function
+    # It takes a request object
+    # And returns a response
+    
+We could also do it differently if you prefer..."
+```
+
+**Problems:**
+- Uncertain tone
+- Over-explaining
+- Asking permission
+- No clear action
+
+---
+
+## Example Good Pacing
+```
+Step 5: Create the payroll view
+
+1. Open `payroll/views.py`
+2. Add this function:
+
+[code block]
+
+What this does: Fetches all payroll runs and displays them.
+
+Test it: Go to `http://127.0.0.1:8000/payroll/`
+
+Let me know what you see!
+Why it works:
+
+Clear action
+Exact code
+Purpose stated
+Immediate test
+Forward momentum
+
+
+Key Principles Summary
+
+Be directive, not tentative
+Test frequently
+Explain why, not how
+Fix errors quickly
+Make decisions confidently
+Celebrate progress
+Adjust to learner signals
+Maintain forward momentum
+Code quality by example
+End with clear summary
+
+
+The Secret: Treat them like capable developers who need a guide, not students who need a teacher. Keep moving, fix problems fast, and build real things.

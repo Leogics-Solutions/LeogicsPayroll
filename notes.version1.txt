@@ -1,0 +1,157 @@
+Leogics Payroll System - Complete Overview
+You just built a production-ready payroll management system! Here's what you have:
+
+Core Features
+1. Employee Management (CRUD)
+
+Add, edit, delete employees
+Stores: name, email, role, nationality, passport, EPF/SOCSO numbers, gender
+Salary structure: base salary + statutory deductions (EPF, SOCSO, EIS, Zakat, PCB, HRDF)
+Employer contributions: separate fields for each statutory type
+All data stored in Firebase Firestore
+
+2. Payroll Run Creation
+
+Select month and issue date
+Choose which employees to include (multi-select with checkboxes)
+Snapshot design: freezes employee data at time of payroll creation (preserves history even if employee details change later)
+Auto-calculates statutory deductions from employee records
+
+3. Payroll Management ("Payrolling Screen")
+
+View all employees in a payroll run
+See salary, deductions, and net pay at a glance
+Two types of deductions:
+
+Statutory (EPF, SOCSO, etc.) - pulled from employee record, read-only
+Ad-hoc (loans, advances, penalties) - editable per payroll run
+
+
+Live calculation of totals
+Clean modal interface for managing deductions
+
+4. PDF Generation
+
+Professional payslips matching PayrollPanda design
+Company logo, branding, full employee details
+Breakdown of: gross pay, statutory deductions, ad-hoc deductions, employer contributions, net pay
+Three download options:
+
+Individual employee PDF
+Combined PDF (all employees in one file)
+ZIP file (separate PDF per employee)
+
+
+
+5. Email Integration
+
+"Email Payslip" button per employee
+Opens Gmail compose with:
+
+Pre-filled recipient (employee email)
+Professional subject line: "Payslip for [Month Year] - Confidential"
+Personalized body with employee name
+Company contact details
+
+
+Keeps human in the loop (manual PDF attachment)
+
+6. Authentication & Security
+
+Django's built-in auth system
+Login required for all pages
+Single-user setup (you as admin)
+Clean login page
+Session management
+
+
+Tech Stack
+
+Backend: Django 6.0 (Python)
+Database: Firebase Firestore (NoSQL cloud database)
+PDF: ReportLab (professional PDF generation)
+Auth: Django's authentication system
+Frontend: Server-rendered templates with vanilla CSS/JavaScript
+Design: Minimalist, modern UI with clean aesthetics
+
+
+Architecture Highlights
+Data Model
+Employees (master data)
+  └─ name, email, role, salary, statutory deductions, employer contributions
+
+Payroll Runs
+  └─ month, issued_date, created_at
+      └─ Payroll Lines (snapshot per employee)
+          └─ employee data snapshot, salary, totals
+              └─ Ad-hoc Deductions (subcollection)
+                  └─ name, amount, sort_order
+Key Design Decisions
+
+Snapshot pattern: Employee data frozen in payroll lines (no retroactive changes)
+Separation of concerns: Repository layer handles all Firestore logic
+No Django ORM: Direct Firestore integration for flexibility
+Static employer contributions: Manual entry (no complex formulas yet)
+Human-in-loop email: Manual attachment keeps control
+
+
+What You Can Do
+✅ Manage employees (add, edit, delete)
+✅ Create monthly payroll runs
+✅ Add ad-hoc deductions per employee
+✅ Generate professional PDFs
+✅ Download individual or bulk payslips
+✅ Email payslips to employees
+✅ Secure login system
+✅ Clean, modern UI
+
+Current Limitations (MVP Constraints)
+
+Single user only (no multi-tenant)
+Employer contributions are static values (no auto-calculation formulas)
+No payroll run editing/deletion
+No audit logs
+No email sending from server (manual Gmail attachment)
+No employee import/export
+
+
+File Structure
+LeogicsPayroll/
+├── payroll_mvp/           # Django project
+│   ├── settings.py        # Configuration
+│   ├── urls.py            # Main routing
+│   └── firebase.py        # Firebase connection
+├── payroll/               # Payroll app
+│   ├── views.py           # All view logic
+│   ├── urls.py            # App routing
+│   ├── repository.py      # Firestore data access
+│   ├── pdf_generator.py   # PDF creation
+│   ├── templates/         # HTML templates
+│   │   └── payroll/
+│   │       ├── base.html
+│   │       ├── payroll_list.html
+│   │       ├── payroll_create.html
+│   │       ├── payroll_detail.html
+│   │       ├── employee_list.html
+│   │       ├── employee_create.html
+│   │       ├── employee_edit.html
+│   │       └── employee_delete.html
+│   ├── static/
+│   │   └── payroll/
+│   │       └── leogics-logo.png
+│   └── management/commands/
+│       └── seed_employees.py
+├── templates/
+│   └── login.html
+├── firebase-credentials.json
+└── manage.py
+
+Next Steps (If You Want to Extend)
+
+Email sending: Add SMTP integration for automatic email sending
+Payroll editing: Allow editing/deleting payroll runs
+Auto-calculations: Add formulas for EPF/SOCSO based on salary brackets
+Reporting: Monthly summaries, year-to-date totals
+Audit trail: Track who changed what and when
+Bulk operations: Import employees from CSV/Excel
+Multi-user: Role-based access (HR, Finance, Admin)

@@ -1,0 +1,69 @@
+{% extends 'payroll/base.html' %}
+
+{% block title %}Create Payroll{% endblock %}
+
+{% block content %}
+<h1>Create New Payroll</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="card">
+        <div class="form-group">
+            <label for="month">Month</label>
+            <input type="month" id="month" name="month" required>
+        </div>
+
+        <div class="form-group">
+            <label for="issued_date">Issued Date</label>
+            <input type="text" id="issued_date" name="issued_date" placeholder="e.g., 22 December 2025" required>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom: 20px; font-size: 18px; color: #2d3748;">Select Employees</h2>
+
+        {% if employees %}
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;">
+                        <input type="checkbox" id="select-all" checked>
+                    </th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Employee ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="employees" value="{{ employee.id }}" class="employee-checkbox"
+                            checked>
+                    </td>
+                    <td>{{ employee.name }}</td>
+                    <td>{{ employee.role }}</td>
+                    <td>{{ employee.employee_id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #718096;">No employees found. Add employees to Firestore first.</p>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn">Create Payroll</button>
+    <a href="{% url 'payroll_list' %}"
+        style="margin-left: 12px; color: #667eea; text-decoration: none; font-weight: 600;">Cancel</a>
+</form>
+
+<script>
+    // Select/deselect all employees
+    document.getElementById('select-all').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.employee-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+</script>
+{% endblock %}

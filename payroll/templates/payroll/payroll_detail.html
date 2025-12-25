@@ -1,0 +1,365 @@
+{% extends 'payroll/base.html' %}
+
+{% block title %}Payroll Detail{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div>
+        <h1 style="margin-bottom: 8px;">Payroll - {{ run.month }}</h1>
+        <p style="color: #64748b; font-size: 14px;">Issued: {{ run.issued_date }}</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'download_all_payslips_zip' run.id %}" class="btn">Download All (ZIP)</a>
+        <a href="{% url 'download_payroll_pdf' run.id %}" class="btn" style="background: #475569;">Download Combined
+            PDF</a>
+        <a href="{% url 'payroll_list' %}" class="nav-link" style="align-self: center;">Back</a>
+    </div>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 20px; font-size: 18px; color: #0f172a; font-weight: 600;">Employee Payroll Lines</h2>
+
+    {% if lines %}
+    <table>
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Role</th>
+                <th style="text-align: right;">Salary</th>
+                <th style="text-align: right;">Deductions</th>
+                <th style="text-align: right;">Net Pay</th>
+                <th style="width: 120px; text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in lines %}
+            <tr>
+                <td>
+                    <div style="font-weight: 500; color: #0f172a;">{{ line.name }}</div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;">{{ line.employee_id }}</div>
+                </td>
+                <td>{{ line.role }}</td>
+                <td style="text-align: right; font-weight: 500;">RM {{ line.salary|floatformat:2 }}</td>
+                <td style="text-align: right; color: #dc2626;">RM {{ line.total_deductions|floatformat:2 }}</td>
+                <td style="text-align: right; font-weight: 600; color: #059669;">RM {{ line.net_pay|floatformat:2 }}
+                </td>
+                <td style="text-align: center;">
+                    <div style="display: flex; gap: 6px; justify-content: center;">
+                        <button class="btn-small" onclick="openDeductionsModal('{{ line.id }}', '{{ line.name }}')">
+                            Deductions
+                        </button>
+                        <a href="{% url 'download_single_payslip' run.id line.id %}" class="btn-small"
+                            style="text-decoration: none; display: inline-block; line-height: 1;">
+                            PDF
+                        </a>
+                        <button class="btn-small" style="background: #059669;"
+                            onclick="emailPayslip('{{ line.email }}', '{{ run.month }}', '{{ line.name }}')">
+                            Email
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #64748b;">No employees in this payroll run.</p>
+    {% endif %}
+</div>
+
+<!-- Deductions Modal -->
+<div id="deductionsModal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div
+        style="background: white; border-radius: 12px; padding: 32px; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <h2 style="margin-bottom: 8px; font-size: 20px; font-weight: 600; color: #0f172a;">Deductions</h2>
+        <p id="employeeName" style="color: #64748b; margin-bottom: 24px; font-size: 14px;"></p>
+
+        <!-- Statutory Deductions Section -->
+        <div class="deduction-section">
+            <h3
+                style="font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Statutory Deductions</h3>
+            <div style="background: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0;">
+                <div class="statutory-row">
+                    <span>EPF</span>
+                    <span id="epf_amount" style="font-weight: 600;">RM 0.00</span>
+                </div>
+                <div class="statutory-row">
+                    <span>SOCSO</span>
+                    <span id="socso_amount" style="font-weight: 600;">RM 0.00</span>
+                </div>
+                <div class="statutory-row">
+                    <span>EIS</span>
+                    <span id="eis_amount" style="font-weight: 600;">RM 0.00</span>
+                </div>
+                <div class="statutory-row">
+                    <span>Zakat</span>
+                    <span id="zakat_amount" style="font-weight: 600;">RM 0.00</span>
+                </div>
+                <div class="statutory-row">
+                    <span>PCB</span>
+                    <span id="pcb_amount" style="font-weight: 600;">RM 0.00</span>
+                </div>
+                <div class="statutory-row">
+                    <span>HRDF</span>
+                    <span id="hrdf_amount" style="font-weight: 600;">RM 0.00</span>
+                </div>
+                <div
+                    style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 14px;">
+                    <span style="font-weight: 600; color: #0f172a;">Subtotal</span>
+                    <span id="statutory_subtotal" style="font-weight: 700; color: #0f172a;">RM 0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ad-hoc Deductions Section -->
+        <div class="deduction-section" style="margin-top: 24px;">
+            <h3
+                style="font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Ad-hoc Deductions</h3>
+            <div id="adhocDeductionsList">
+                <!-- Ad-hoc deduction rows will be added here -->
+            </div>
+
+            <button onclick="addAdhocRow()"
+                style="margin-top: 12px; padding: 8px 16px; background: #f1f5f9; color: #0f172a; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
+                + Add Ad-hoc Deduction
+            </button>
+
+            <div
+                style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 14px;">
+                <span style="font-weight: 600; color: #0f172a;">Subtotal</span>
+                <span id="adhoc_subtotal" style="font-weight: 700; color: #0f172a;">RM 0.00</span>
+            </div>
+        </div>
+
+        <!-- Total Section -->
+        <div style="margin-top: 24px; padding: 16px; background: #0f172a; border-radius: 8px; color: white;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 14px;">Total Deductions</span>
+                <span id="total_deductions" style="font-size: 18px; font-weight: 700;">RM 0.00</span>
+            </div>
+            <div
+                style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2);">
+                <span style="font-size: 14px;">Net Pay</span>
+                <span id="net_pay" style="font-size: 18px; font-weight: 700; color: #4ade80;">RM 0.00</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px;">
+            <button onclick="closeDeductionsModal()"
+                style="padding: 10px 20px; background: #f1f5f9; color: #0f172a; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                Cancel
+            </button>
+            <button onclick="saveDeductions()" class="btn">
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-small {
+        padding: 6px 12px;
+        background: #0f172a;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.15s ease;
+    }
+
+    .btn-small:hover {
+        background: #1e293b;
+    }
+
+    .deduction-row {
+        display: grid;
+        grid-template-columns: 1fr 150px 40px;
+        gap: 12px;
+        margin-bottom: 12px;
+        align-items: center;
+    }
+
+    .remove-btn {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .remove-btn:hover {
+        background: #fecaca;
+    }
+
+    .statutory-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+        color: #475569;
+    }
+
+    .adhoc-row {
+        display: grid;
+        grid-template-columns: 1fr 150px 40px;
+        gap: 12px;
+        margin-bottom: 12px;
+        align-items: center;
+    }
+</style>
+
+<script>
+    let currentLineId = null;
+    let currentRunId = '{{ run.id }}';
+    let currentSalary = 0;
+    let statutoryTotal = 0;
+
+    function openDeductionsModal(lineId, employeeName) {
+        currentLineId = lineId;
+        document.getElementById('employeeName').textContent = employeeName;
+        document.getElementById('deductionsModal').style.display = 'flex';
+        loadDeductions(lineId);
+    }
+
+    function closeDeductionsModal() {
+        document.getElementById('deductionsModal').style.display = 'none';
+        currentLineId = null;
+    }
+
+    async function loadDeductions(lineId) {
+        // Fetch the payroll line data
+        const lineResponse = await fetch(`/payroll/${currentRunId}/lines/${lineId}/deductions/`);
+        const lineData = await lineResponse.json();
+
+        // Load statutory deductions (from line snapshot)
+        document.getElementById('epf_amount').textContent = `RM ${parseFloat(lineData.line.epf_deduction || 0).toFixed(2)}`;
+        document.getElementById('socso_amount').textContent = `RM ${parseFloat(lineData.line.socso_deduction || 0).toFixed(2)}`;
+        document.getElementById('eis_amount').textContent = `RM ${parseFloat(lineData.line.eis_deduction || 0).toFixed(2)}`;
+        document.getElementById('zakat_amount').textContent = `RM ${parseFloat(lineData.line.zakat_deduction || 0).toFixed(2)}`;
+        document.getElementById('pcb_amount').textContent = `RM ${parseFloat(lineData.line.pcb_deduction || 0).toFixed(2)}`;
+        document.getElementById('hrdf_amount').textContent = `RM ${parseFloat(lineData.line.hrdf_deduction || 0).toFixed(2)}`;
+
+        currentSalary = parseFloat(lineData.line.salary || 0);
+        statutoryTotal = parseFloat(lineData.line.statutory_deductions_total || 0);
+
+        document.getElementById('statutory_subtotal').textContent = `RM ${statutoryTotal.toFixed(2)}`;
+
+        // Load ad-hoc deductions
+        const container = document.getElementById('adhocDeductionsList');
+        container.innerHTML = '';
+
+        if (lineData.adhoc_deductions && lineData.adhoc_deductions.length > 0) {
+            lineData.adhoc_deductions.forEach(ded => {
+                addAdhocRow(ded.name, ded.amount);
+            });
+        }
+
+        updateTotals();
+    }
+
+    function addAdhocRow(name = '', amount = '') {
+        const container = document.getElementById('adhocDeductionsList');
+        const row = document.createElement('div');
+        row.className = 'adhoc-row';
+        row.innerHTML = `
+            <input type="text" placeholder="Deduction name" value="${name}" onchange="updateTotals()" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+            <input type="number" placeholder="Amount" value="${amount}" step="0.01" onchange="updateTotals()" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+            <button class="remove-btn" onclick="this.parentElement.remove(); updateTotals();">×</button>
+        `;
+        container.appendChild(row);
+    }
+
+    function updateTotals() {
+        // Calculate ad-hoc total
+        const rows = document.querySelectorAll('.adhoc-row');
+        let adhocTotal = 0;
+
+        rows.forEach(row => {
+            const amountInput = row.querySelector('input[type="number"]');
+            const amount = parseFloat(amountInput.value) || 0;
+            adhocTotal += amount;
+        });
+
+        document.getElementById('adhoc_subtotal').textContent = `RM ${adhocTotal.toFixed(2)}`;
+
+        // Calculate totals
+        const totalDeductions = statutoryTotal + adhocTotal;
+        const netPay = currentSalary - totalDeductions;
+
+        document.getElementById('total_deductions').textContent = `RM ${totalDeductions.toFixed(2)}`;
+        document.getElementById('net_pay').textContent = `RM ${netPay.toFixed(2)}`;
+    }
+
+    async function saveDeductions() {
+        const rows = document.querySelectorAll('.adhoc-row');
+        const adhocDeductions = [];
+
+        rows.forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            const name = inputs[0].value.trim();
+            const amount = inputs[1].value.trim();
+
+            if (name || amount) {
+                adhocDeductions.push({ name, amount });
+            }
+        });
+
+        const response = await fetch(`/payroll/${currentRunId}/lines/${currentLineId}/deductions/save/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ adhoc_deductions: adhocDeductions })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            closeDeductionsModal();
+            location.reload();
+        }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('deductionsModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeDeductionsModal();
+        }
+    });
+
+    function emailPayslip(recipientEmail, month, employeeName) {
+        // Parse month (e.g., "2025-01" to "January 2025")
+        const monthDate = new Date(month + '-01');
+        const monthName = monthDate.toLocaleDateString('en-US', { month: 'long' });
+        const year = monthDate.getFullYear();
+
+        const subject = `Payslip for ${monthName} ${year} - Confidential`;
+
+        const body = `Dear ${employeeName},
+
+Please find attached your payslip for ${monthName} ${year}.
+
+The attached document contains details of your salary, statutory deductions, and any applicable allowances or adjustments for this period.
+
+If you encounter any difficulties accessing your payslip or have questions regarding the information, please feel free to contact us at markmark@leogics.com or Whatsapp to 0182111070.
+
+Thank you.`;
+
+        // URL encode the parameters
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipientEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+        // Open Gmail in new tab
+        window.open(gmailUrl, '_blank');
+    }
+</script>
+{% endblock %}

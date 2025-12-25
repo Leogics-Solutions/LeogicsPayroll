@@ -1,0 +1,59 @@
+{% extends 'payroll/base.html' %}
+
+{% block title %}Employees{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>Employees</h1>
+    <div style="display: flex; gap: 12px;">
+        <a href="{% url 'employee_create' %}" class="btn">Add Employee</a>
+        <a href="{% url 'payroll_list' %}" style="color: #64748b; text-decoration: none; font-weight: 500; align-self: center;">Back to Payrolls</a>
+    </div>
+</div>
+
+{% if employees %}
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Employee ID</th>
+                <th style="text-align: right;">Base Salary</th>
+                <th style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>
+                    <div style="font-weight: 500; color: #0f172a;">{{ employee.name }}</div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;">{{ employee.nationality }}</div>
+                </td>
+                <td>{{ employee.role }}</td>
+                <td>{{ employee.employee_id }}</td>
+                <td style="text-align: right; font-weight: 500;">RM {{ employee.base_salary|floatformat:2 }}</td>
+                <td style="text-align: center;">
+                    <div style="display: flex; gap: 6px; justify-content: center;">
+                        <a href="{% url 'employee_edit' employee.id %}" 
+                           style="padding: 6px 14px; background: #0f172a; color: white; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                            Edit
+                        </a>
+                        <a href="{% url 'employee_delete' employee.id %}" 
+                           style="padding: 6px 14px; background: #dc2626; color: white; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                            Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 60px 20px;">
+    <p style="color: #64748b; font-size: 16px; margin-bottom: 20px;">No employees yet.</p>
+    <a href="{% url 'employee_create' %}" class="btn">Add Your First Employee</a>
+</div>
+{% endif %}
+{% endblock %}

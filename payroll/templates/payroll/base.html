@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Payroll MVP{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #0f172a;
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            background: #1e293b;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #fafbfc;
+        }
+
+        input[type="text"],
+        input[type="month"],
+        input[type="number"] {
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 14px;
+            transition: all 0.15s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="month"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #0f172a;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #0f172a;
+        }
+
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding-bottom: 2px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #0f172a;
+            border-bottom-color: #0f172a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div
+            style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+            <div style="display: flex; gap: 24px;">
+                <a href="{% url 'payroll_list' %}" class="nav-link">Payrolls</a>
+                <a href="{% url 'employee_list' %}" class="nav-link">Employees</a>
+            </div>
+            <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+</body>
+
+</html>
