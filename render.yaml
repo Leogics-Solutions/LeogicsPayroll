@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: leogics-payroll
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn payroll_mvp.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.0
+      - key: SECRET_KEY
+        generateValue: true
